@@ -1,0 +1,6 @@
+bandit==1.7.4
+black==22.8.0
+radon==5.1.0
+xenon==0.9.0
+coverage==6.4.4
+cdk-nag==2.21.80

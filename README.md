@@ -23,7 +23,7 @@ Test examples have been provided under the tests folder and will be executed by 
 ## Setup and Install
 When deploying the solution it will create a code commit repository in your AWS account and start a pipeline deployment.  Once you have deployed you can switch from the GitHub repository to your CodeCommit repository.
 
-1. Clone the repo `git clone {GITREPO HERE ONCE CREATED}`
+1. Clone the repo `git clone https://github.com/aws-samples/sagemaker-studio-and-lifecycle-policies-with-cdk`
 2. Update constants.py with the details of your environment.  You must update the items marked as "must update", any other elements you can leave as default.  (See table at the end)
 3. Create a virtual environment for Python and install dependencies
 ```shell

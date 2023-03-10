@@ -8,6 +8,13 @@ This repo contains an example of how to deploy SageMaker Studio using CDK.  The 
 
 Test examples have been provided under the tests folder and will be executed by the deployment pipelines.  THe project also runs tests for black, bandit, radon, xenon and coverage.
 
+### Further Recommendations
+There are aspects of the project that can be built upon increase the security posture.
+
+- The sample utilises lambda functions to deploy a life-cycle policy that monitors idle time of resources.  Enabling x-ray on this function would enable increased awareness of errors and performance bottlenecks.  See https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html
+- AWS recommends to enable access logging on S3 buckets.  This enables logs that can be used for security and access audits. See https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html
+- It's best practice to avoid using wildcard statements in roles and policies.  The lifecycle policy lambda function requires access to user profiles that are not known at creation time, so in this instance we have decided to use a wildcard to identify user profiles that will be updated to allow the use of the .
+
 ### Dependencies
 **Production Dependencies**
 - Python 3.7 or above

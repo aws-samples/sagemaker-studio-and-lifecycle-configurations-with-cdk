@@ -48,27 +48,31 @@ pip install -r requirements-dev.txt
 ```
 5. Run `cdk deploy sagemaker-studio-deployment-toolchain` to deploy the CICD components and create the CodeCommit repository
 6. hit yes to deploy.  This operation only needs to be performed when you want to deploy the CICD pipelines, or if you want to update them.  The deployment of SageMaker studio will be deployed by the CICD pipeline.
-7. Record the output of the repote codecommit endpoint.
-8. You now need to commit the code to your new repository
-9. Disconnect from the GitHub repo and reconnect to CodeCommit
+7. Record the output of the remote codecommit endpoint.
+
+You now need to commit the code to your new repository
+
+8. Disconnect from the GitHub repo and reconnect to CodeCommit
 ```shell
 git remote remove origin
 git init --initial-branch=main
 git remote add origin codecommit::ap-southeast-2://{YOUR_REPO_NAME_HERE}
 ```
 
-10. Before the pipeline will run successfully you need to run a cdk synth to generate the cdk.context.json file and check that into source control.
+To confirm the orgin has updated run `git remote get-url --all origin`
+
+9. Before the pipeline will run successfully you need to run a cdk synth to generate the cdk.context.json file and check that into source control.
 ```shell
 cdk synth
 ```
-11. confirm you now have a file in the repository called 'cdk.context.json'.  This file contains the details of your VPC's for deployment
-12. Now you can commit your code to the repository.
+10. confirm you now have a file in the repository called 'cdk.context.json'.  This file contains the details of your VPC's for deployment
+11. Now you can commit your code to the repository.
 ```shell
 git add .
 git commit -m "initial commit"
 git push --set-upstream origin main
 ```
-13. go to the aws console, navigate to codepipeline and check the status of the deployment
+12. go to the aws console, navigate to codepipeline and check the status of the deployment
 
 # Reference
 The project uses the following guidelines to structure the repository

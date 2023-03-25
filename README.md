@@ -30,9 +30,12 @@ There are aspects of the project that can be built upon increase the security po
 ## Setup and Install
 When deploying the solution it will create a code commit repository in your AWS account and start a pipeline deployment.  Once you have deployed you can switch from the GitHub repository to your CodeCommit repository.
 
+Ensure you have the aws cli installed and you have logged in or are using a profile to connect to AWS.
+
 1. Clone the repo `git clone https://github.com/aws-samples/sagemaker-studio-and-lifecycle-policies-with-cdk`
 2. Update constants.py with the details of your environment.  You must update the items marked as "must update", any other elements you can leave as default.  (See table at the end)
-3. Create a virtual environment for Python and install dependencies
+3. For the Sandbox deployment create a .env file (use .env.example as a template) or create envirnmnet varlables for CDK_DEFAULT_ACCOUNT and CDK_DEFAULT_REGION
+4. Create a virtual environment for Python and install dependencies
 ```shell
 python3 -m venv .venv
 source .venv/bin/activate
@@ -43,29 +46,29 @@ to run tests you will also need to run
 ```shell
 pip install -r requirements-dev.txt
 ```
-4. Run `cdk deploy sagemaker-studio-deployment-toolchain` to deploy the CICD components and create the CodeCommit repository
-5. hit yes to deploy.  This operation only needs to be performed when you want to deploy the CICD pipelines, or if you want to update them.  The deployment of SageMaker studio will be deployed by the CICD pipeline.
-6. Record the output of the repote codecommit endpoint.
-7. You now need to commit the code to your new repository
-8. Disconnect from the GitHub repo and reconnect to CodeCommit
+5. Run `cdk deploy sagemaker-studio-deployment-toolchain` to deploy the CICD components and create the CodeCommit repository
+6. hit yes to deploy.  This operation only needs to be performed when you want to deploy the CICD pipelines, or if you want to update them.  The deployment of SageMaker studio will be deployed by the CICD pipeline.
+7. Record the output of the repote codecommit endpoint.
+8. You now need to commit the code to your new repository
+9. Disconnect from the GitHub repo and reconnect to CodeCommit
 ```shell
 git remote remove origin
 git init --initial-branch=main
 git remote add origin codecommit::ap-southeast-2://{YOUR_REPO_NAME_HERE}
 ```
 
-9. Before the pipeline will run successfully you need to run a cdk synth to generate the cdk.context.json file and check that into source control.
+10. Before the pipeline will run successfully you need to run a cdk synth to generate the cdk.context.json file and check that into source control.
 ```shell
 cdk synth
 ```
-10. confirm you now have a file in the repository called 'cdk.context.json'.  This file contains the details of your VPC's for deployment
-11. Now you can commit your code to the repository.
+11. confirm you now have a file in the repository called 'cdk.context.json'.  This file contains the details of your VPC's for deployment
+12. Now you can commit your code to the repository.
 ```shell
 git add .
 git commit -m "initial commit"
 git push --set-upstream origin main
 ```
-12. go to the aws console, navigate to codepipeline and check the status of the deployment
+13. go to the aws console, navigate to codepipeline and check the status of the deployment
 
 # Reference
 The project uses the following guidelines to structure the repository

@@ -1,4 +1,4 @@
-# SageMaker Studio deployment with Lifecycle Configurations using CDK
+# SageMaker Studio deployment with lifecycle configurations using CDK
 
 This repo contains an example of how to deploy SageMaker Studio using CDK.  The project deploys code through a CICD pipeline using CodeCommit, CodeBuild and CodePipelines and gives the abiloity to deploy to prod and to a sandbox environment for testing.  Features of the deployment
 

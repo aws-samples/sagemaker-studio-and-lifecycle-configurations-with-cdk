@@ -77,6 +77,7 @@ git push --set-upstream origin main
 # Reference
 The project uses the following guidelines to structure the repository
 https://aws.amazon.com/blogs/developer/recommended-aws-cdk-project-structure-for-python-applications/
+The project uses the excellent auto-shutdown script from https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension
 
 
 # Deployment

@@ -26,7 +26,7 @@ class APITestCase(unittest.TestCase):
             stack,
             "StudioStack",
             vpc=vpc,
-            private_subnet_ids=private_subnet_ids,
+            subnet_ids=private_subnet_ids,
             env_name="sandbox",
         )
         template = assertions.Template.from_stack(studio_stack)

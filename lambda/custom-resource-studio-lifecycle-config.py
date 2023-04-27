@@ -69,7 +69,7 @@ def on_update(event):
     create_response = client.create_studio_lifecycle_config(
         StudioLifecycleConfigName=f"sagemaker-studio-auto-shutdown-{props['domain_id']}",
         StudioLifecycleConfigContent=encode_file(
-            "scripts/install-autoshutdown-server-extension/on-jupyter-server-start.sh"
+            "scripts/auto-shutdown/on-jupyter-server-start.sh"
         ),
         StudioLifecycleConfigAppType="JupyterServer",
     )

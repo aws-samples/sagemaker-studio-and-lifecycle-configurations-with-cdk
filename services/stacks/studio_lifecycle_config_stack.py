@@ -22,11 +22,19 @@ from services.constructs.sagemaker_studio_lifecycle_config_resource import (
 
 class StudioLifecycleConfigStack(NestedStack):
     def __init__(
-        self, scope: Construct, construct_id: str, domain_id: str, **kwargs
+        self,
+        scope: Construct,
+        construct_id: str,
+        env_name: str,
+        domain_id: str,
+        **kwargs
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # custom cf resource to deploy lifecycle
         aws_custom = SageMakerStudioLifecycleConfigResource(
-            self, "studio-lifecycle-config-auto-shutdown", domain_id=domain_id
+            self,
+            "studio-lifecycle-config-auto-shutdown",
+            domain_id=domain_id,
+            env_name=env_name,
         )

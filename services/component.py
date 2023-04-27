@@ -25,14 +25,26 @@ class Services(Stack):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        print(f"Building environment for {env_name}")
+
         # Get vpc to load connect studio to
         self.vpc = ec2.Vpc.from_lookup(
-            self, "vpc-lookup", vpc_name=constants.VPC_NAME, is_default=False
+            self,
+            "vpc-lookup",
+            vpc_name=constants.SANDBOX_VPC_NAME
+            if env_name == "sandbox"
+            else constants.PROD_VPC_NAME,
+            is_default=False,
         )
 
-        self.private_subnet_ids = [
-            private_subnet.subnet_id for private_subnet in self.vpc.private_subnets
-        ]
+        print(f"VPC: {self.vpc.vpc_id}")
+
+        sub = self.vpc.select_subnets(
+            subnet_type=ec2.SubnetType[constants.SUBNET_DEPLOYMENT_TYPE]
+        )
+        self.private_subnet_ids = sub.subnet_ids
+
+        print(f"Subnets to deploy to: {len(self.private_subnet_ids)}")
 
         self.sagemaker_studio_stack = StudioStack(
             self, "sagemaker-studio-stack", env_name, self.vpc, self.private_subnet_ids
@@ -41,6 +53,7 @@ class Services(Stack):
         self.studio_lifecycle_configs_nested_stack = StudioLifecycleConfigStack(
             self,
             "sagemaker-studio-lifecycle-config-nested-stack",
+            env_name,
             self.sagemaker_studio_stack.cfn_domain.attr_domain_id,
         )
 

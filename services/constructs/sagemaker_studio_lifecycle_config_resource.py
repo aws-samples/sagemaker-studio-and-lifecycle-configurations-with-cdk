@@ -17,6 +17,7 @@ class SageMakerStudioLifecycleConfigResource(Construct):
         scope: Construct,
         construct_id: str,
         domain_id: str,
+        env_name: str,
         timeout: cdk.Duration = cdk.Duration.minutes(5),
     ) -> None:
         super().__init__(scope, construct_id)
@@ -63,11 +64,12 @@ class SageMakerStudioLifecycleConfigResource(Construct):
         event_handler = aws_lambda.Function(
             scope=self,
             id="lifecycle-policy-lambda-function",
-            function_name=f"{construct_id}{domain_id}EventHandler",
+            function_name=f"{construct_id}-{domain_id}-handler",
             runtime=aws_lambda.Runtime.PYTHON_3_9,
             code=aws_lambda.Code.from_asset("lambda"),
             handler="custom-resource-studio-lifecycle-config.on_event",
             role=lambda_role,
+            environment={"environment": env_name},
             timeout=timeout,
         )
 
@@ -84,5 +86,5 @@ class SageMakerStudioLifecycleConfigResource(Construct):
             service_token=provider.service_token,
             removal_policy=cdk.RemovalPolicy.DESTROY,
             resource_type="Custom::StudioLifecycleConfig",
-            properties={"domain_id": domain_id, "version": "2"},
+            properties={"domain_id": domain_id, "version": "3"},
         )

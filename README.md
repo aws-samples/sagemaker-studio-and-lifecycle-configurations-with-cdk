@@ -1,4 +1,4 @@
-# SageMaker Studio deployment with lifecycle configurations using CDK
+# SageMaker Studio deployment using CDK
 
 This repo contains an example of how to deploy SageMaker Studio using CDK.  The project deploys code through a CICD pipeline using CodeCommit, CodeBuild and CodePipelines and gives the abiloity to deploy to prod and to a sandbox environment for testing.  Features of the deployment
 
@@ -8,12 +8,12 @@ This repo contains an example of how to deploy SageMaker Studio using CDK.  The 
 
 Test examples have been provided under the tests folder and will be executed by the deployment pipelines.  THe project also runs tests for black, bandit, radon, xenon and coverage.
 
-### Further Recommendations
-There are aspects of the project that can be built upon increase the security posture.
+**Isolated Deployment (No Internet)**
 
-- The sample utilises lambda functions to deploy a life-cycle policy that monitors idle time of resources.  Enabling x-ray on this function would enable increased awareness of errors and performance bottlenecks.  See https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html
-- AWS recommends to enable access logging on S3 buckets.  This enables logs that can be used for security and access audits. See https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html
-- It's best practice to avoid using wildcard statements in roles and policies.  The lifecycle policy lambda function requires access to user profiles that are not known at creation time, so in this instance we have decided to use a wildcard to identify user profiles that will be updated to allow the use of the .
+It's possible to deploy the solution and configure SageMaker Studio with no internet access.  for this deployment type set the "USE_S3_FOR_ASSETS" variable to True and the "SUBNET_DEPLOYMENT_TYPE" to private or private-isolated, depending on your subnet type.  This will use an s3 deployed version of auto shutdown script.  Some points to consider with this deployment method
+
+- To access other AWS services, ensure you have the correct VPC Endpoints in place.  A listing can be found here for SageMaker required endpoints.  https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html#studio-notebooks-and-internet-access-vpc
+- To access Pip you can use CodeArtifact to setup a pass through repository.
 
 ### Dependencies
 **Production Dependencies**
@@ -30,12 +30,9 @@ There are aspects of the project that can be built upon increase the security po
 ## Setup and Install
 When deploying the solution it will create a code commit repository in your AWS account and start a pipeline deployment.  Once you have deployed you can switch from the GitHub repository to your CodeCommit repository.
 
-Ensure you have the aws cli installed and you have logged in or are using a profile to connect to AWS.
-
-1. Clone the repo `git clone https://github.com/aws-samples/sagemaker-studio-and-lifecycle-policies-with-cdk`
+1. Clone the repo `git clone {GITREPO HERE ONCE CREATED}`
 2. Update constants.py with the details of your environment.  You must update the items marked as "must update", any other elements you can leave as default.  (See table at the end)
-3. For the Sandbox deployment create a .env file (use .env.example as a template) or create envirnmnet varlables for CDK_DEFAULT_ACCOUNT and CDK_DEFAULT_REGION
-4. Create a virtual environment for Python and install dependencies
+3. Create a virtual environment for Python and install dependencies
 ```shell
 python3 -m venv .venv
 source .venv/bin/activate
@@ -46,12 +43,10 @@ to run tests you will also need to run
 ```shell
 pip install -r requirements-dev.txt
 ```
-5. Run `cdk deploy sagemaker-studio-deployment-toolchain` to deploy the CICD components and create the CodeCommit repository
-6. hit yes to deploy.  This operation only needs to be performed when you want to deploy the CICD pipelines, or if you want to update them.  The deployment of SageMaker studio will be deployed by the CICD pipeline.
-7. Record the output of the remote codecommit endpoint.
-
-You now need to commit the code to your new repository
-
+4. Run `cdk deploy sagemaker-studio-deployment-toolchain` to deploy the CICD components and create the CodeCommit repository
+5. hit yes to deploy.  This operation only needs to be performed when you want to deploy the CICD pipelines, or if you want to update them.  The deployment of SageMaker studio will be deployed by the CICD pipeline.
+6. Record the output of the repote codecommit endpoint.
+7. You now need to commit the code to your new repository
 8. Disconnect from the GitHub repo and reconnect to CodeCommit
 ```shell
 git remote remove origin
@@ -72,7 +67,7 @@ git add .
 git commit -m "initial commit"
 git push --set-upstream origin main
 ```
-12. go to the aws console, navigate to codepipeline and check the status of the deployment
+12. go to the aws console, navigate to 
 
 # Reference
 The project uses the following guidelines to structure the repository

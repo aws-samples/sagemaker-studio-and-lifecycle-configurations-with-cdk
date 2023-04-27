@@ -43,13 +43,23 @@ else:
 EOF
 chmod +x .auto-shutdown/set-time-interval.sh
 
+#update the studio region to use the deployment region.  Currently its set to default which will fail in a no-internet environment
+sudo -E sh -c 'echo $AWS_REGION > /etc/yum/vars/awsregion'
+
 # "wget" is not part of the base Jupyter Server image, you need to install it first if needed to download the tarball
-sudo yum install -y wget
-# You can download the tarball from GitHub or alternatively, if you're using VPCOnly mode, you can host on S3
-wget -O .auto-shutdown/extension.tar.gz https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension/raw/main/sagemaker_studio_autoshutdown-0.1.5.tar.gz
+sudo yum install -y wget jq
+
+# Get domain id to identify the environment
+DOMAIN_ID=`cat /opt/ml/metadata/resource-metadata.json | jq .DomainId | sed -e 's/^"//' -e 's/"$//'`
+DOMAIN_ARN=`cat /opt/ml/metadata/resource-metadata.json | jq .ResourceArn | sed -e 's/^"//' -e 's/"$//'`
+DOMAIN_NAME=`aws sagemaker describe-domain --domain-id ${DOMAIN_ID} | jq .DomainName | sed -e 's/^"//' -e 's/"$//'`
+# DEPLOYMENT_TYPE=`aws sagemaker list-tags --resource-arn ${DOMAIN_ARN} | jq .Tags | jq from_entries | jq .deployment-type | sed -e 's/^"//' -e 's/"$//'`
+DEPLOYMENT_BUCKET="${DOMAIN_NAME}-deployment-assets"
+
+# wget -O .auto-shutdown/extension.tar.gz https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension/raw/main/sagemaker_studio_autoshutdown-0.1.5.tar.gz
 
 # Or instead, could serve the tarball from an S3 bucket in which case "wget" would not be needed:
-# aws s3 --endpoint-url [S3 Interface Endpoint] cp s3://[tarball location] .auto-shutdown/extension.tar.gz
+aws s3 cp s3://${DEPLOYMENT_BUCKET}/deployment_assets/sagemaker_studio_autoshutdown-0.1.5.tar.gz .auto-shutdown/extension.tar.gz
 
 # Installs the extension
 cd .auto-shutdown

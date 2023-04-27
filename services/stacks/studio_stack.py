@@ -9,6 +9,8 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_kms as kms,
     aws_s3 as s3,
+    aws_ssm as ssm,
+    aws_s3_deployment as s3_deploy,
     aws_sagemaker as sagemaker,
     CfnTag,
 )
@@ -26,7 +28,7 @@ class StudioStack(NestedStack):
         construct_id: str,
         env_name: str,
         vpc: ec2.Vpc,
-        private_subnet_ids,
+        subnet_ids,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -49,9 +51,27 @@ class StudioStack(NestedStack):
         sagemaker_studio_sharing_s3_bucket = s3.Bucket(
             self,
             "s3-bucket-sms-sharing",
+            bucket_name=f"{constants.SAGEMAKER_DOMAIN_NAME_PREFIX}-{env_name}-sharing",
             encryption_key=sagemaker_studio_kms_key,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             enforce_ssl=True,
+        )
+
+        sagemaker_studio_deployment_s3_bucket = s3.Bucket(
+            self,
+            "s3-bucket-sms-deployments",
+            bucket_name=f"{constants.SAGEMAKER_DOMAIN_NAME_PREFIX}-{env_name}-deployment-assets",
+            encryption_key=sagemaker_studio_kms_key,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            enforce_ssl=True,
+        )
+
+        s3_deploy.BucketDeployment(
+            self,
+            "assets-bucket-content-deployment",
+            sources=[s3_deploy.Source.asset("./assets")],
+            destination_bucket=sagemaker_studio_deployment_s3_bucket,
+            destination_key_prefix="deployment_assets",
         )
 
         # Setup roles and policies
@@ -115,7 +135,16 @@ class StudioStack(NestedStack):
         if constants.ADD_GLUE_PERMISSION:
             # Policy for Glue
             policy_sagemaker_studio_glue_interactive_sessions = iam.PolicyStatement(
-                actions=["sts:GetCallerIdentity", "iam:GetRole", "iam:Passrole"],
+                actions=[
+                    "sts:GetCallerIdentity",
+                    "iam:GetRole",
+                    "iam:Passrole",
+                    "glue:GetSession",
+                    "glue:GetPartitions",
+                    "glue:RunStatement",
+                    "glue:GetStatement",
+                    "glue:StopSession",
+                ],
                 resources=["*"],
                 effect=iam.Effect.ALLOW,
             )
@@ -157,7 +186,7 @@ class StudioStack(NestedStack):
                 sharing_settings=sagemaker.CfnDomain.SharingSettingsProperty(
                     notebook_output_option="Allowed",
                     s3_kms_key_id=sagemaker_studio_kms_key.key_id,
-                    s3_output_path=f"s3://{sagemaker_studio_sharing_s3_bucket.bucket_name}/shared_notebooks/",
+                    s3_output_path=f"s3://{constants.SAGEMAKER_DOMAIN_NAME_PREFIX}-{env_name}-sharing/shared_notebooks/",
                 ),
                 jupyter_server_app_settings=sagemaker.CfnDomain.JupyterServerAppSettingsProperty(
                     default_resource_spec=sagemaker.CfnDomain.ResourceSpecProperty(
@@ -166,17 +195,29 @@ class StudioStack(NestedStack):
                 ),
             ),
             domain_name=constants.SAGEMAKER_DOMAIN_NAME_PREFIX + "-" + env_name,
-            subnet_ids=private_subnet_ids,
+            subnet_ids=subnet_ids,
             vpc_id=vpc.vpc_id,
             # the properties below are optional
             app_network_access_type="VpcOnly",
             kms_key_id=sagemaker_studio_kms_key.key_id,
-            tags=[CfnTag(key="project", value="analytics-environment")],
+            tags=[
+                CfnTag(key="project", value="analytics-environment"),
+                CfnTag(key="environment", value=env_name),
+                CfnTag(key="deployment-type", value=constants.SUBNET_DEPLOYMENT_TYPE),
+                CfnTag(key="use-s3-assets", value=str(constants.USE_S3_FOR_ASSETS)),
+            ],
         )
 
+        # Add parameter lookup permission
         self.domain_id = cdk.CfnOutput(
             self,
             "sagemaker_studio_domain_id",
             # API doesn't disable create_default_stage, hence URL will be defined
             value=self.cfn_domain.attr_domain_id,  # type: ignore
+        )
+
+        self.studio_deployment_bucket = cdk.CfnOutput(
+            self,
+            "sagemaker_studio_deployment_bucket",
+            value=sagemaker_studio_deployment_s3_bucket.bucket_name,
         )

@@ -51,7 +51,7 @@ class StudioStack(NestedStack):
         sagemaker_studio_sharing_s3_bucket = s3.Bucket(
             self,
             "s3-bucket-sms-sharing",
-            bucket_name=f"{constants.SAGEMAKER_DOMAIN_NAME_PREFIX}-{env_name}-sharing",
+            bucket_name=f"{constants.SAGEMAKER_DOMAIN_NAME_PREFIX}-{env_name}-sharing-{account_id}-{region}",
             encryption_key=sagemaker_studio_kms_key,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             enforce_ssl=True,
@@ -60,7 +60,7 @@ class StudioStack(NestedStack):
         sagemaker_studio_deployment_s3_bucket = s3.Bucket(
             self,
             "s3-bucket-sms-deployments",
-            bucket_name=f"{constants.SAGEMAKER_DOMAIN_NAME_PREFIX}-{env_name}-deployment-assets",
+            bucket_name=f"{constants.SAGEMAKER_DOMAIN_NAME_PREFIX}-{env_name}-deployment-assets-{account_id}-{region}",
             encryption_key=sagemaker_studio_kms_key,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             enforce_ssl=True,

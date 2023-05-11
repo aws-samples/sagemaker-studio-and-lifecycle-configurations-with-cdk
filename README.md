@@ -94,9 +94,9 @@ The project uses the excellent auto-shutdown script from https://github.com/aws-
 | APP_NAME                     |             | Name of your application                                                                           | sagemaker-studio               |
 | SAGEMAKER_DOMAIN_NAME_PREFIX |             | Prefix for the SageMaker domain to be created                                                      | sms                            |
 | SANDBOX_ENV_NAME             |             | The name of the sandbox environment (used to prefix some elements)                                 | sandbox                        |
-| PRODUCTION_ENV_NAME          |             | The name of the production environment (used to prefix some elements)                              | prod                           |
-| PRODUCTION_ENV_ACCOUNT       | Yes         | Your production AWS Account id.                                                                    |                                |
-| PRODUCTION_ENV_REGION        | Yes         | The AWS Region you would like to deploy the production SageMaker Studio to                         |                                |
+| MAIN_ENV_NAME          |             | The name of the production environment (used to prefix some elements)                              | dev                           |
+| MAIN_ENV_ACCOUNT       | Yes         | Your production AWS Account id.                                                                    |                                |
+| MAIN_ENV_REGION        | Yes         | The AWS Region you would like to deploy the production SageMaker Studio to                         |                                |
 | VPC_NAME                     | Yes         | The VPC name that you would like to deploy into.  The name is used to lookup the VPC in CDK        |                                |
 | AUTH_TYPE                    |             | Authentication type SSO or IAM                                                                     | SSO                            |
 | ADD_GLUE_PERMISSION          |             | If you want to enable Glue permission in SageMaker so that users can use Glue Interactive Sessions | True                           | 

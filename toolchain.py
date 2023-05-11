@@ -27,7 +27,6 @@ class Toolchain(cdk.Stack):
         pipeline = pipelines.CodePipeline(
             self,
             "Pipeline",
-            cli_version=Toolchain._get_cdk_cli_version(),
             cross_account_keys=True,
             docker_enabled_for_synth=False,
             docker_enabled_for_self_mutation=False,
@@ -75,21 +74,11 @@ class Toolchain(cdk.Stack):
         )
 
     @staticmethod
-    def _get_cdk_cli_version() -> str:
-        package_json_path = (
-            pathlib.Path(__file__).parent.joinpath("package.json").resolve()
-        )
-        with open(package_json_path, encoding="utf_8") as package_json_file:
-            package_json = json.load(package_json_file)
-        cdk_cli_version = str(package_json["devDependencies"]["aws-cdk"])
-        return cdk_cli_version
-
-    @staticmethod
     def _add_production_stage(pipeline: pipelines.CodePipeline) -> None:
         pipeline.add_stage(
             PipelineStage(
                 pipeline,
-                f"{constants.APP_NAME}-{constants.PRODUCTION_ENV_NAME}-pipeline-stage",
+                f"{constants.APP_NAME}-{constants.MAIN_ENV_NAME}-pipeline-stage",
             )
         )
 
@@ -109,11 +98,11 @@ class PipelineStage(cdk.Stage):
 
         Services(
             self,
-            constants.APP_NAME + "-" + constants.PRODUCTION_ENV_NAME,
+            constants.APP_NAME + "-" + constants.MAIN_ENV_NAME,
             env=cdk.Environment(
-                account=constants.PRODUCTION_ENV_ACCOUNT,
-                region=constants.PRODUCTION_ENV_REGION,
+                account=constants.MAIN_ENV_ACCOUNT,
+                region=constants.MAIN_ENV_REGION,
             ),
-            env_name=constants.PRODUCTION_ENV_NAME,
-            stack_name=constants.APP_NAME + "-" + constants.PRODUCTION_ENV_NAME,
+            env_name=constants.MAIN_ENV_NAME,
+            stack_name=constants.APP_NAME + "-" + constants.MAIN_ENV_NAME,
         )

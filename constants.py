@@ -5,7 +5,7 @@
 APP_NAME = "sagemaker-studio"
 SAGEMAKER_DOMAIN_NAME_PREFIX = "sms"
 SANDBOX_ENV_NAME = "sandbox"
-MAIN_ENV_NAME = "prod"
+MAIN_ENV_NAME = "dev"
 MAIN_ENV_ACCOUNT = ""  # which region would you like to deploy the production studio
 MAIN_ENV_REGION = ""  # which region would you like to deploy the production studio
 

@@ -105,6 +105,16 @@ class StudioStack(NestedStack):
             ]
         )
 
+        policy_sagemaker_studio_codewhisperer = iam.PolicyDocument(
+            statements=[
+                iam.PolicyStatement(
+                    actions=["codewhisperer:GenerateRecommendations"],
+                    resources=["*"],
+                    effect=iam.Effect.ALLOW,
+                )
+            ]
+        )
+
         role_principal = (
             iam.CompositePrincipal(
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
@@ -122,6 +132,7 @@ class StudioStack(NestedStack):
             inline_policies={
                 "policy_sagemaker_studio_domain": policy_sagemaker_studio_domain,
                 "policy_sagemaker_studio_kms": policy_sagemaker_studio_kms,
+                "policy_sagemaker_studio_codewhisperer": policy_sagemaker_studio_codewhisperer,
             },
             managed_policies=[
                 iam.ManagedPolicy.from_managed_policy_arn(

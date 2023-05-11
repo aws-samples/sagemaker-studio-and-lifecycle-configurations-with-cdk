@@ -54,7 +54,8 @@ DOMAIN_ID=`cat /opt/ml/metadata/resource-metadata.json | jq .DomainId | sed -e '
 DOMAIN_ARN=`cat /opt/ml/metadata/resource-metadata.json | jq .ResourceArn | sed -e 's/^"//' -e 's/"$//'`
 DOMAIN_NAME=`aws sagemaker describe-domain --domain-id ${DOMAIN_ID} | jq .DomainName | sed -e 's/^"//' -e 's/"$//'`
 # DEPLOYMENT_TYPE=`aws sagemaker list-tags --resource-arn ${DOMAIN_ARN} | jq .Tags | jq from_entries | jq .deployment-type | sed -e 's/^"//' -e 's/"$//'`
-DEPLOYMENT_BUCKET="${DOMAIN_NAME}-deployment-assets"
+ACCOUNT_ID=`aws sts get-caller-identity --query "Account" --output text`
+DEPLOYMENT_BUCKET="${DOMAIN_NAME}-deployment-assets-${ACCOUNT_ID}-${AWS_REGION}"
 
 # wget -O .auto-shutdown/extension.tar.gz https://github.com/aws-samples/sagemaker-studio-auto-shutdown-extension/raw/main/sagemaker_studio_autoshutdown-0.1.5.tar.gz
 
@@ -73,7 +74,9 @@ if [ "$AWS_SAGEMAKER_JUPYTERSERVER_IMAGE" = "jupyter-server-3" ] ; then
     conda activate studio
 fi;
 pip install --no-dependencies --no-build-isolation -e .
+pip install amazon-codewhisperer-jupyterlab-ext
 jupyter serverextension enable --py sagemaker_studio_autoshutdown
+jupyter server extension enable amazon_codewhisperer_jupyterlab_ext
 if [ "$AWS_SAGEMAKER_JUPYTERSERVER_IMAGE" = "jupyter-server-3" ] ; then
     conda deactivate
 fi;

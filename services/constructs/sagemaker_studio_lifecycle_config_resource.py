@@ -86,5 +86,5 @@ class SageMakerStudioLifecycleConfigResource(Construct):
             service_token=provider.service_token,
             removal_policy=cdk.RemovalPolicy.DESTROY,
             resource_type="Custom::StudioLifecycleConfig",
-            properties={"domain_id": domain_id, "version": "3"},
+            properties={"domain_id": domain_id, "version": "5"},
         )

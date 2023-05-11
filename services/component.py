@@ -31,9 +31,7 @@ class Services(Stack):
         self.vpc = ec2.Vpc.from_lookup(
             self,
             "vpc-lookup",
-            vpc_name=constants.SANDBOX_VPC_NAME
-            if env_name == "sandbox"
-            else constants.PROD_VPC_NAME,
+            vpc_name=constants.VPC_NAME,
             is_default=False,
         )
 

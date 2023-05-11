@@ -5,17 +5,16 @@
 APP_NAME = "sagemaker-studio"
 SAGEMAKER_DOMAIN_NAME_PREFIX = "sms"
 SANDBOX_ENV_NAME = "sandbox"
-PRODUCTION_ENV_NAME = "prod"
-PRODUCTION_ENV_ACCOUNT = ""  # which region would you like to deploy the production studio
-PRODUCTION_ENV_REGION = ""  # which region would you like to deploy the production studio
+MAIN_ENV_NAME = "prod"
+MAIN_ENV_ACCOUNT = ""  # which region would you like to deploy the production studio
+MAIN_ENV_REGION = ""  # which region would you like to deploy the production studio
 
 # which account should your cicd pipelines go in
 TOOLCHAIN_ACCOUNT = ""  # which account should your cicd pipelines go in.
 TOOLCHAIN_REGION = ""  # which region should your cicd pipelines go in.
 
 #networking
-PROD_VPC_NAME = ""  # update to the VPC you will install SageMaker Studio into.
-SANDBOX_VPC_NAME = ""
+VPC_NAME = ""  # update to the VPC you will install SageMaker Studio into.
 
 SUBNET_DEPLOYMENT_TYPE = "PRIVATE_WITH_NAT"
 USE_S3_FOR_ASSETS = True
